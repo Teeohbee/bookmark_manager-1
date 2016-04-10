@@ -10,7 +10,6 @@ feature 'User sign up' do
   # However, we are currently driving everything through
   # feature tests and we want to keep this example simple.
 
-
   scenario 'I can sign up as a new user' do
     user = build(:user)
     expect { sign_up(user) }.to change(User, :count).by(1)
@@ -19,17 +18,23 @@ feature 'User sign up' do
   end
 
   scenario 'requires a matching confirmation password' do
-    user = build(:user, password_confirmation: "wrong")
+    user = build(:user, password_confirmation: 'wrong')
     expect { sign_up(user) }.not_to change(User, :count)
     expect(current_path).to eq('/users')
     expect(page).to have_content('Password and confirmation password do not match')
   end
 
   scenario 'requires email not to be empty' do
-    user = build(:user, email: "")
+    user = build(:user, email: '')
     expect { sign_up(user) }.not_to change(User, :count)
     expect(current_path).to eq('/users')
     expect(page).to have_content('Please provide a valid email')
+  end
+
+  scenario 'I cannot sign up with an existing email' do
+    user = build(:user)
+    expect { sign_up(user) }.to change(User, :count).by(0)
+    expect(page).to have_content('Email is already taken')
   end
 
   def sign_up(user)

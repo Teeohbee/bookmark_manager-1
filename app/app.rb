@@ -22,7 +22,7 @@ class App < Sinatra::Base
 
   post '/links' do
     link = Link.new(url: params[:url], title: params[:title])
-    params[:tag].split(" ").each do |name|
+    params[:tag].split(' ').each do |name|
       tag = Tag.create(name: name.downcase)
       link.tags << tag
     end
@@ -43,15 +43,16 @@ class App < Sinatra::Base
 
   post '/users' do
     @user = User.create(email: params[:email],
-                       password: params[:password],
-                       password_confirmation: params[:password_confirmation])
+                        password: params[:password],
+                        password_confirmation: params[:password_confirmation])
     if @user.save
       session[:user_id] = @user.id
       redirect to('/')
-    elsif params[:email].empty?
-      flash.now[:email_error] = "Please provide a valid email"
+    elsif @user.email == ""
+      flash.now[:email_error] = 'Please provide a valid email'
+      erb :'users/new'
     else
-      flash.now[:password_error] = "Password and confirmation password do not match"
+      flash.now[:password_error] = 'Password and confirmation password do not match'
       erb :'users/new'
     end
   end
